@@ -46,9 +46,9 @@ I've included a bill of materials for the hardware, and a complete wiring schema
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_pcb.jpg" alt="hydro pico wiring diagram - complete" width="400" />
 </p>
-<div style="text-align:center;">
+<center>
   <h2>Bill of Materials (BOM)</h2>
-</div>
+</center>
 
 1. **Raspberry Pi Pico W Microcontroller**
 
