@@ -1,0 +1,103 @@
+{% args plant_options, plant_type, days_planted, temperature, humidity, barometric_pressure, pico_internal_temp, thermistor_temp %}
+<!DOCTYPE html>
+html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydroponic Garden</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://kit.fontawesome.com/d2c60f03e4.js" crossorigin="anonymous"></script>
+    <style>
+        /* Add any additional styles here */
+        .centered-table {
+            margin: 0 auto;
+            text-align: left;
+            width: 50%;
+        }
+
+        .centered-table img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .sensor-status {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .sensor-status li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+{% if plant_type is None %}
+    <h2>Select Plant Type</h2>
+
+    <div id="plant-options">
+        {% for option in plant_options %}
+            <div class="plant-option" onclick="selectOptionAndSubmit('{{ option }}')">
+                <img src="/static/images/{{ option.lower() }}.jpg" alt="{{ option }}">
+                <p>{{ option }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- For the '/submit' form -->
+    <form id="start-form" method="post" action="/" onsubmit="return validateAndRedirect(event)">
+        <input type="hidden" id="selected-plant" name="selected-plant">
+    </form>
+
+    <hr class="separator">
+
+    <h2>Sensor Data</h2>
+    <div class="sensor-data">
+        <!-- Your existing sensor data here -->
+    </div>
+
+{% else %}
+    <div class="centered-table">
+        <img src="/static/images/{{ plant_type.lower() }}.jpg" alt="{{ plant_type }}">
+    </div>
+
+    <div class="sensor-data centered-table">
+        <ul class="sensor-status">
+            <li><strong>Air Pump:</strong> <span id="air-pump-status"></span></li>
+            <li><strong>Water Pump:</strong> <span id="water-pump-status"></span></li>
+            <li><strong>Pico Temp:</strong> <span id="pico-temp"></span></li>
+        </ul>
+    </div>
+
+    <hr class="separator">
+
+    <h2>Sensor Data</h2>
+    <div class="sensor-data">
+        <!-- Your existing sensor data here -->
+    </div>
+
+    <!-- For the '/reset' form -->
+    <form method="post" action="/">
+        <input type="submit" name="reset_garden" value="Reset Garden">
+    </form>
+
+{% endif %}
+
+<script>
+    function selectOptionAndSubmit(option) {
+        // Set the selected plant in the hidden input field
+        document.getElementById('selected-plant').value = option;
+        
+        // Submit the form
+        document.getElementById('start-form').submit();
+    }
+
+    function validateAndRedirect(event) {
+        // Add your validation logic here if needed
+        // Return true to allow form submission or false to prevent it
+        return true;
+    }
+</script>
+</body>
+</html>

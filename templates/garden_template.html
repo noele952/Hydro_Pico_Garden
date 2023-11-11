@@ -1,0 +1,99 @@
+{% args plant_options, garden_pic, plant_type, days_planted, temperature, humidity, pressure, pico_temp, water_temp, light_percentage %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydroponic Garden</title>
+    <link rel="stylesheet" href="https://hydropi.s3.us-east-2.amazonaws.com/static/style.css">
+    <script src="https://kit.fontawesome.com/d2c60f03e4.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+{% if plant_type is None %}
+    <h2>Select Plant Type</h2>
+
+    <div id="plant-options">
+        {% for option in plant_options %}
+            <div class="plant-option" onclick="selectOptionAndSubmit('{{ option }}')">
+                <img src="http://hydropi.s3.amazonaws.com/images/{{ option.lower() }}.jpg" alt="{{ option }}">
+                <p>{{ option }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form id="start-form" method="post" action="/" onsubmit="return validateAndRedirect(event)">
+        <input type="hidden" id="selected-plant" name="selected-plant">
+    </form>
+    
+   <hr class="separator">
+   
+    <h2>Sensor Data</h2>
+    
+{% include "sensors.html" temperature, humidity, pressure, pico_temp, water_temp, light_percentage %}
+
+
+    </div>
+
+{% else %}
+<div>
+<h2>Hydro Garden</h2>
+      <div id="plant-options">
+        <div class="plant-option">
+          <img
+            src="http://hydropi.s3.amazonaws.com/images/{{ plant_type.lower() }}.jpg" alt="{{ plant_type }}"
+          />
+          <p>{{ plant_type }}</p>
+        </div>
+        <div class="plant-option">
+            <img src="{{ garden_pic }}" alt="Garden Picture" />
+            <p>Live Garden</p>
+          </div>
+        </div>
+
+      </div>
+      
+  <div class="pump-status">
+  <div class="pump-status-item">
+    <h3 class="device-name">WATERPUMP</h3>
+    <p class="status"><span id="waterpump-status-text">OFF</span></p>
+  </div>
+  <div class="pump-status-item">
+    <h3 class="device-name">AIRPUMP</h3>
+    <p class="status"><span id="airpump-status-text">OFF</span></p>
+  </div>
+  <div class="pump-status-item">
+    <h3 class="device-name">HEATER</h3>
+    <p class="status"><span id="heater-status-text">OFF</span></p>
+  </div>
+</div>
+
+      </div>
+      <div class="centered-row">
+        <div class="sensor-row">
+          <i class="far fa-calendar-alt fa-2x"></i>
+          <p>Days Planted: {{ days_planted }}</p>
+        </div>
+      </div>
+      <hr class="separator" />
+
+      <h2 class="sensor-data-heading">Sensor Data</h2>
+      <a href="/data" class="more-data-button">Click for more Sensor Data</a>
+      
+{% include "sensors.html" temperature, humidity, pressure, pico_temp, water_temp, light_percentage %} 
+
+        
+                
+            </div>
+      </div>
+
+      <form method="post" action="/">
+        <input type="submit" name="reset_garden" value="Reset Garden" />
+      </form>
+
+</div>
+{% endif %}
+
+<script src="https://hydropi.s3.us-east-2.amazonaws.com/static/index.js"></script>
+</body>
