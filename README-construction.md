@@ -126,6 +126,7 @@ The spine attaches to the side of the bucket, it contains the wiring and support
 </p>
 
 Run the heater wiring up the spine, as well as the connector for the power supply
+![]()
 
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_tube_plug.jpg" alt="hydro pico spine wiring" width="500" />

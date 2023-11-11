@@ -158,15 +158,15 @@ The name and placement of your certificate and key files can be adjusted in conf
 
 #### AWS LAMBDA
 
-Now that we have an MQTT connection, we need some Lambda functions to process the messages. Consult their README.md files for installation details.
+Now that we have an MQTT connection, we need some Lambda functions to process the messages. Consult the README.md files for installation details.
 
 The first function processes the sensor data messages, and saves the data in a DynamoDB table.
 
-[collect_mqtt_data](https://www.github.com/to_be_added)
+[collect_data_mqtt](https://github.com/noele952/Lambda_collect_mqtt_data)
 
 In order to send the garden picture jpeg file over MQTT, it is first broken down into a series of 64 bit encoded strings, which are then sent as a series of mqtt messages. The second link is a pair of Lambda functions. The first function takes the encoded strings and saves them together in a DynamoDB table. The second reassembles the pieces into a .jpeg file, and stores it in your garden picture S3 bucket.
 
-[store_gardenpic_mqtt](https://www.github.com/to_be_added)
+[transmit_pic_mqtt](https://github.com/noele952/Lambda_transmit_pic_mqtt)
 
 #### AWS IoT Core Messsage Routing
 
@@ -250,13 +250,13 @@ Refer to the [Web Application Section](README-webapp.md) for details on how to g
 
 Once the garden is connected to the network, and until a garden is started, it will display the address for the web application. If you scroll with the encoder you can select a plant and start your gardn, or continue scrolling to show readings for the different sensors.
 
-#### OLED Main Menu Video
+#### OLED Main Menu -> Click For Video
 
 [![Alt text](https://img.youtube.com/vi/PLSq3jq0oMs/0.jpg)](https://www.youtube.com/watch?v=PLSq3jq0oMs)
 
 <p>Once a garden has been started, the oled and the rotary encoder will allow you to scroll through the sensor data, and if you push in  the encoder on the Reset screen, it will initiate a reset</p>
 
-#### OLED Main Menu Video
+#### OLED Main Menu -> Click For Video
 
 [![Alt text](https://img.youtube.com/vi/FiWBI7PyXQg/0.jpg)](https://www.youtube.com/watch?v=FiWBI7PyXQg)
 
