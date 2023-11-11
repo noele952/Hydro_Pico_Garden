@@ -43,9 +43,9 @@ The HydroPico Garden project is continuously evolving. Here are some planned enh
 
 I've included a bill of materials for the hardware, and a complete wiring schematic below. It all fits on a 7x9cm PCB Prototype Board.
 
-<div style="text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_pcb.jpg" alt="hydro pico wiring diagram - complete" width="400" />
-</div>
+</p>
 <div style="text-align:center;">
   <h2>Bill of Materials (BOM)</h2>
 </div>
