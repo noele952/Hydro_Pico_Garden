@@ -1,9 +1,8 @@
 # HydroPico Garden Construction Guide
 
-<div id="wiring-power"
-style="text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_complete.jpg" alt="hydro pico garden" width="200" />
-</div>
+</p>
 
 ## Table of Contents
 
@@ -70,122 +69,107 @@ Instructions for preparing the main container for the hydroponic system.
 
 Stcik the polyimide heating element ot the bottom of the bucket. Attach the heater wires to the side of the bucket, and make sure it's long enough to reach the project box. If your bucket is like mine, you'll need to shave some plactic from the bottom of the bucket so the heater is flush
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_heater.jpg" alt="hydro pico garden heater" width="500" />
-</div>
+</p>
 
 #### Netted Pot Installation
 
 Cut holes in the bucket lid for the 2" netted pots
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_top.jpg" alt="hydro pico garden lid" width="500" />
-</div>
+</p>
 
 Cut another hole in the center for the tube to the waterpump
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_lid.jpg" alt="hydro pico garden lid underneath" width="500" />
-</div>
+</p>
 
 #### Tubing
 
 Assemble the tubing for the waterpump. The 10mm tube goes from the pump to a T fitting. The outlets of that T fitting attach to a barb reducing fitting. Those attach to 5mm T fittings, and finally a piece of 5mm tubing delivers the water to the netted pot
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_tubing.jpg" alt="hydro pico garden tubing" width="500" />
-</div>
+</p>
 
 #### Waterpump
 
 Inside the bucket we have the waterpump, the thermitor, and the airstone, which is attached to the airpump(we'll discuss shortly) with 3mm tubing
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_waterpump.jpg" alt="hydro pico inside bucket" width="500" />
-</div>
+</p>
 
 Make sure and put some screening material on the waterpump inlet, to make sure it isn't damaged by any plant debris
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_waterpump_screen.jpg" alt="hydro pico wiring diagram - power supply" width="500" />
-</div>
+</p>
 
 #### Thermistor
 
 The thermistor is enclosed in a length of 3mm tubing, so it can be submerged in the water and remain dry. I've sealed the bottom of the tube with epoxy
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_thermistor.jpg" alt="hydro pico airpump screen" width="500" />
-</div>
+</p>
 
 ### Stage 2: The Spine
 
 The spine attaches to the side of the bucket, it contains the wiring and supports the project box above the garden. The project box should be approximately 32" from the bottom of the bucket, so the spine has a maximum length of 32", or less depending on how you mount it. I used a pvc tube with an inner diameter of 1/4". I would suggest something more like 1/2" to fit all of the wiring. Secure to the bucket with epoxy.
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_power.jpg" alt="hydro pico garden spine" width="300" />
-</div>
+</p>
 
 Run the heater wiring up the spine, as well as the connector for the power supply
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_tube_plug.jpg" alt="hydro pico spine wiring" width="500" />
-</div>
+</p>
 
 #### Airpump
 
 Attach the airpump at the base of the bucket, attach a length of 3mm tubing to the airpump outlet that reaches the bottom of the bucket, and attach the air stone.
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_airpump.jpg" alt="hydro pico airpump" width="400" />
-</div>
+</p>
 
 Run the airpump wiring up the spine, along with the wiring from the other components in the bucket(waterpump, thermistor)
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_tube_wiring.jpg" alt="hydro pico wiring diagram - power supply" width="500" />
-</div>
+</p>
 
 Attach your project box firmly to the top of the spine, and attach the component wiring
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_complete.jpg" alt="hydro pico wiring" width="300" />
-</div>
+</p>
 
 ### Stage 3: The Project Box
 
 For the poroject box, you can use whatever you ahve availble that will fit the components inside. Besides fitting the componnents, you need to make sure your camera is placed over the center of the garden
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_pcb.jpg" alt="hydro pico garden" width="500" />
-</div>
+</p>
 
 Mount the oled scren, the rotary encoder, and the red led to the top of the project box. Make sure and mount them firmly, the rotray encoder in particular.
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_project_box.jpg" alt="hydro pico PCB" width="500" />
-</div>
+</p>
 
 A hole needs to be cut in the bottom to mount the camera. Mount the bme280 environmental sensor on the bottom of the box so that your readings aren't affected by the heat of the compnonents
 
-<div id="wiring-power"
-style="text-align:center; margin-top: 30px; margin-bottom: 30px;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_bme280.jpg" alt="hydro pico garden project box" width="500" />
-</div>
+</p>
 
 ## Maintenance Tips
 

@@ -46,7 +46,7 @@ I've included a bill of materials for the hardware, and a complete wiring schema
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_pcb.jpg" alt="hydro pico wiring diagram - complete" width="400" />
 </p>
-<h2 align="center">Bill of Materials (BOM)</h2>
+<h2>Bill of Materials (BOM)</h2>
 
 1. **Raspberry Pi Pico W Microcontroller**
 
@@ -102,9 +102,7 @@ I've included a bill of materials for the hardware, and a complete wiring schema
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_bb.png" alt="hydro pico wiring diagram - complete" width="600" />
 </p>
-<div style="text-align:center;">
-  <h2>HydroPico Wiring Diagram - Complete</h2>
-</div>
+<h2>HydroPico Wiring Diagram - Complete</h2>
 
 This is the complete HydroPico wiring diagram, click the links below for wiring diagrams divided into sub systems, with detailed explanations.
 
@@ -230,18 +228,17 @@ MQTT_CHUNK_SIZE determines the length of the 64 bit encoded strings that the gar
 
 ## Garden Construction
 
-<div style="text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_complete.jpg" alt="hydro pico wiring diagram - power supply" height="400" />
-</div>
+</p>
 
 For detailed information about constructing the garden, please refer to the [Garden Construction README](README-construction.md).
 
 ## Web Application
 
-<div div id="garden-photo"
-style="margin-top: 30px; margin-bottom: 30px; text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/HydroPico_webapp_garden.png" alt="HydroPico - garden photo" width="300" />
-</div>
+</p>
 
 For detailed information about setting up and running the web app, please refer to the [Web App Section README](README-webapp.md).
 
@@ -265,13 +262,10 @@ Once the garden is connected to the network, and until a garden is started, it w
 
 ## Media
 
-<div id="wiring-power"
-style="text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_power_bb.png" alt="hydro pico wiring diagram - power supply" width="600" />
-</div>
-<div style="text-align:center;">
-  <h2>HydroPico Wiring Diagram - Power Supply</h2>
-</div>
+</p>
+<h2>HydroPico Wiring Diagram - Power Supply</h2>
 
 For power we are 12V AC Adapter. That gets routed to the IN+ and IN- of the buck convertor, as well as the MOSFET trigger switch for the waterpump and the heater.
 
@@ -285,26 +279,21 @@ For the heater we'll need the ability to vary the heater power from high to low.
 
 The power outputs are connected to dupont pins soldered to the PCB board, with the corresponding dupont connectors attached to airpump, waterpump, and heater.
 
-<div style="text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_screen_bb.png" alt="hydro pico wiring diagram - screen and enocoder" width="400" />
-</div>
+</p>
 
-<div style="text-align:center;">
-  <h2>HydroPico Wiring Diagram - OLED Screen & Encoder</h2>
-</div>
+<h2>HydroPico Wiring Diagram - OLED Screen & Encoder</h2>
 
 The OLED screen connects via I2C. I have the I2C bus connected to I2C Channel 1 on pins GP6 and GP7. 10K Ω pullup resistors connect the I2C data and clock lines to power for voltage stability.
 
 For the Rotary Encoder we connect Clock(CLK) to GP11, Data(DT) to GP10, and Switch(SW) to GP12
 
-<div id="wiring-sensors"
-style="text-align:center;">
+<p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_sensors_bb.png" alt="hydro pico wiring diagram - sensors and camera" width="600" />
-</div>
+</p>
 
-<div style="text-align:center;">
-  <h2>HydroPico Wiring Diagram - Sensors and Camera</h2>
-</div>
+<h2>HydroPico Wiring Diagram - Sensors and Camera</h2>
 
 The BME280 board collects temperature, humidity and barometric pressure data. It connects via I2C, GP6 and GP7. We setup the bus in the OLED screen section above.
 
