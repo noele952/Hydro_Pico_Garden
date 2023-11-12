@@ -1,0 +1,35 @@
+Parameters:
+  ThingName:
+    Type: String
+    Description: "Enter a name for your IoT Thing"
+
+  PolicyName:
+    Type: String
+    Description: "Enter a name for your IoT Policy"
+
+Resources:
+  MyIoTThing:
+    Type: "AWS::IoT::Thing"
+    Properties:
+      ThingName: !Ref ThingName
+
+  MyIoTPolicy:
+    Type: "AWS::IoT::Policy"
+    Properties:
+      PolicyName: !Ref PolicyName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "iot:Connect"
+              - "iot:Publish"
+              - "iot:Subscribe"
+              - "iot:Receive"
+            Resource: "*"
+
+  MyIoTThingPolicyAttachment:
+    Type: "AWS::IoT::PolicyPrincipalAttachment"
+    Properties:
+      PolicyName: !Ref MyIoTPolicy
+      Principal: !GetAtt MyIoTThing.Arn
