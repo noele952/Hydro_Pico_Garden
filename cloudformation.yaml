@@ -1,22 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
 Parameters:
-  ThingName:
+  HydroPicoThingName:
     Type: String
     Description: "Enter a name for your IoT Thing"
 
-  PolicyName:
+  HydroPicoPolicyName:
     Type: String
     Description: "Enter a name for your IoT Policy"
 
+  HydroPicoBucketName:
+    Type: String
+    Description: "Enter a bucket name for HydroPico data"
+
+  PILLayerArn:
+    Type: String
+    Description: "Enter the ARN for the PIL Lambda layer"
+
+  HydroPicoMQTTDataLambdaFunctionName:
+    Type: String
+    Description: "Enter a name for your Lambda function"
+    Default: "HydroPicoMQTTDataLambdaFunction"
+
+  HydroPicoMQTTImageStorageLambdaFunctionName:
+    Type: String
+    Description: "Enter a name for your Lambda function"
+    Default: "HydroPicoMQTTImageStorageLambdaFunction"
+
+  HydroPicoImageAssemblyLambdaFunctionName:
+    Type: String
+    Description: "Enter a name for your Lambda function"
+    Default: "HydroPicoImageAssemblyLambdaFunction"
+
 Resources:
-  MyIoTThing:
+  HydroPicoIoTThing:
     Type: "AWS::IoT::Thing"
     Properties:
-      ThingName: !Ref ThingName
+      ThingName: !Ref HydroPicoThingName
 
-  MyIoTPolicy:
+  HydroPicoIoTPolicy:
     Type: "AWS::IoT::Policy"
     Properties:
-      PolicyName: !Ref PolicyName
+      PolicyName: !Ref HydroPicoPolicyName
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -28,8 +53,398 @@ Resources:
               - "iot:Receive"
             Resource: "*"
 
-  MyIoTThingPolicyAttachment:
+  MHydroPicoIoTThingPolicyAttachment:
     Type: "AWS::IoT::PolicyPrincipalAttachment"
     Properties:
-      PolicyName: !Ref MyIoTPolicy
-      Principal: !GetAtt MyIoTThing.Arn
+      PolicyName: !Ref HydroPicoIoTPolicy
+      Principal: !GetAtt HydroPicoIoTThing.Arn
+
+  HydroPicoMQTTDataLambdaFunctionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "HydroPicoMQTTDataLambdaFunctionPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "dynamodb:CreateTable"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:ListTables"
+                Resource: "*"
+
+  HydroPicoMQTTDataLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Ref HydroPicoMQTTDataLambdaFunctionName
+      Handler: "index.lambda_handler"
+      Role: !GetAtt HydroPicoMQTTDataLambdaFunctionRole.Arn
+      Runtime: "python3.8"
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          from datetime import datetime
+          from decimal import Decimal
+
+          DYNAMODB_TABLE_PREFIX = 'Hydro_Pico'
+
+          dynamodb = boto3.resource('dynamodb')
+
+          def lambda_handler(event, context):
+              data_type = event['type']
+              data_value = event['value']
+              machine_id = event['machine_id']
+
+              # Check if DynamoDB table exists, create if not
+              create_dynamodb_table(f'{DYNAMODB_TABLE_PREFIX}-{machine_id}')
+
+              # Save the message in DynamoDB
+              save_to_dynamodb(f'{DYNAMODB_TABLE_PREFIX}-{machine_id}', data_type, data_value)
+
+
+          def create_dynamodb_table(table_name):
+              # Check if the table exists
+              existing_tables = dynamodb.meta.client.list_tables()['TableNames']
+              
+              if table_name not in existing_tables:
+                  # Create the DynamoDB table
+                  try:
+                      table = dynamodb.create_table(
+                          TableName=table_name,
+                          KeySchema=[
+                              {'AttributeName': 'timestamp', 'KeyType': 'HASH'},
+                              {'AttributeName': 'sensor_type', 'KeyType': 'RANGE'}
+                          ],
+                          AttributeDefinitions=[
+                              {'AttributeName': 'timestamp', 'AttributeType': 'S'},
+                              {'AttributeName': 'sensor_type', 'AttributeType': 'S'}
+                          ],
+                          ProvisionedThroughput={
+                              'ReadCapacityUnits': 5,
+                              'WriteCapacityUnits': 5,
+                          }
+                      )
+                      
+                      # Wait for the table to be created
+                      table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
+                  except dynamodb.meta.client.exceptions.ResourceInUseException:
+                      # Table is already being created, wait for it to exist
+                      dynamodb.meta.client.get_waiter('table_exists').wait(TableName=table_name)
+
+
+          def save_to_dynamodb(table_name, sensor_type, sensor_value):
+              # Generate timestamp and save the sensor reading in DynamoDB with a composite key
+              timestamp = datetime.now().isoformat()
+              
+              # Convert float to Decimal
+              sensor_value_decimal = Decimal(str(sensor_value))
+              
+              table = dynamodb.Table(table_name)
+              table.put_item(Item={
+                  'timestamp': timestamp,
+                  'sensor_type': sensor_type,
+                  'sensor_value': sensor_value_decimal
+              })
+
+  HydroPicoMQTTImageStorageLambdaFunctionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "HydroPicoMQTTImageStorageLambdaFunctionPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "dynamodb:CreateTable"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:ListTables"
+                  - "lambda:InvokeFunction"
+                Resource: "*"
+
+  HydroPicoMQTTImageStorageLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Ref HydroPicoMQTTImageStorageLambdaFunctionName
+      Handler: "index.lambda_handler"
+      Role: !GetAtt HydroPicoMQTTImageStorageLambdaFunctionRole.Arn
+      Runtime: "python3.8"
+      Environment:
+        Variables:
+          REASSEMBLY_FUNCTION_ARN: !Ref HydroPicoImageAssemblyLambdaFunctionRole.Arn
+      Code:
+        ZipFile: |
+          import boto3
+          import botocore.exceptions
+          from datetime import datetime, timedelta
+          import time
+          import json
+          import base64
+
+          dynamodb = boto3.resource('dynamodb')
+          lambda_client = boto3.client('lambda')
+
+          def lambda_handler(event, context):
+              tablename = event['label']
+              count = event['count']
+              data = event['data']
+              machine_id = event['machine_id']
+            # Creata a dynamodb table to hold the pieces of the picture
+              create_dynamodb_table(tablename)
+              
+              # Check if the message is 'END' and trigger reassembly if needed
+              if data == 'END':
+                  trigger_reassembly(tablename)
+              # Save the message in DynamoDB
+              else:    
+                  save_to_dynamodb(tablename, count, data)
+
+              
+          def create_dynamodb_table(table_name):
+              # Check if the table exists
+              existing_tables = dynamodb.meta.client.list_tables()['TableNames']
+
+              if table_name not in existing_tables:
+                  # Create the DynamoDB table
+                  try:
+                      table = dynamodb.create_table(
+                          TableName=table_name,
+                          KeySchema=[
+                              {'AttributeName': 'count', 'KeyType': 'HASH'},
+                          ],
+                          AttributeDefinitions=[
+                              {'AttributeName': 'count', 'AttributeType': 'N'},
+                          ],
+                          ProvisionedThroughput={
+                              'ReadCapacityUnits': 5,
+                              'WriteCapacityUnits': 5,
+                          }
+                      )
+                      # Wait for the table to be created
+                      table.meta.client.get_waiter(
+                          'table_exists').wait(TableName=table_name)
+
+                  except dynamodb.meta.client.exceptions.ResourceInUseException:
+                      print("exception in create_dynamodb_table")
+                      # Table is already being created, wait for it to exist
+                      dynamodb.meta.client.get_waiter(
+                          'table_exists').wait(TableName=table_name)
+            
+
+          def save_to_dynamodb(table_name, count, data, ttl_minutes=30, retries=3, delay_seconds=5):
+              for attempt in range(retries):
+                  try:
+                      # Save the message in DynamoDB with TTL
+                      print(f'Table name: {table_name}')
+                      print(f'Count: {count}')
+                      print(f'Data: {data}')
+                      decoded_data = base64.b64decode(data)
+                      print("Decoded data:", decoded_data)
+
+                      table = dynamodb.Table(table_name)
+
+                      # Calculate TTL timestamp (current time + TTL in seconds)
+                      ttl_timestamp = int(time.mktime((datetime.utcnow() + timedelta(minutes=ttl_minutes)).timetuple()))
+
+                      response = table.put_item(
+                          Item={
+                              'count': count,
+                              'data': decoded_data,
+                              'ttl': ttl_timestamp
+                          }
+                      )
+                      print("Put item response:", response)
+                      print("Item inserted:", response.get('Attributes'))
+                      print("Success: Data saved to DynamoDB")
+
+                      break  # Break out of the retry loop if successful
+
+                  except botocore.exceptions.WaiterError as we:
+                      print(f"Waiter error: {we}")
+                      time.sleep(delay_seconds)
+                      print("Retrying...")
+
+                  except Exception as e:
+                      print(f"Error saving to DynamoDB (attempt {attempt + 1}/{retries}): {e}")
+                      time.sleep(delay_seconds)
+                      print("Retrying...")
+
+              else:
+                  print("Max retries reached. Unable to save to DynamoDB.")
+
+
+          def trigger_reassembly(table_name):
+              # Trigger the Lambda function for reassembly
+              lambda_client.invoke(
+                  FunctionName=f'{REASSEMBLY_FUNCTION_ARN}',
+                  InvocationType='Event',  # Asynchronous invocation
+                  Payload=json.dumps({'table_name': table_name})
+              )
+
+  HydroPicoImageAssemblyLambdaFunctionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "HydroPicoImageAssemblyLambdaFunctionPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "dynamodb:Scan"
+                  - "dynamodb:DeleteItem"
+                  - "s3:PutObject"
+                Resource: "*"
+
+  HydroPicoImageAssemblyLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Ref HydroPicoImageAssemblyLambdaFunctionName
+      Handler: "index.lambda_handler"
+      Role: !GetAtt HydroPicoImageAssemblyLambdaFunctionRole.Arn
+      Runtime: "python3.8"
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref HydroPicoBucketName
+      Layers:
+        - !Ref PILLayerArn
+      Code:
+        ZipFile: |
+          ####### Requires PIL lambda layer
+          import boto3
+          import json
+          import base64
+          from io import BytesIO
+          from PIL import Image
+          import time
+
+          FOLDER_NAME = 'garden_pic'
+          PICTURE_NAME = 'garden'
+          s3 = boto3.client('s3')
+
+          def lambda_handler(event, context):
+          # Extract the table name from the event payload
+          table_name = event['table_name']
+          # Retrieve all pieces from DynamoDB
+          pieces = retrieve_pieces_from_dynamodb(table_name)
+          print(pieces)
+          # Validate if all pieces are present
+          if validate_pieces(pieces):
+              # Reassemble the pieces into a JPEG file
+              assembled_image = reassemble_image(pieces)
+              print(assembled_image)
+              # Save the assembled image to S3
+              save_to_s3(assembled_image)
+
+              # Clean up DynamoDB table
+              clean_up_dynamodb(table_name)
+          else:
+              print("Error: Incomplete pieces. Reassembly aborted.")
+
+
+          def retrieve_pieces_from_dynamodb(table_name):
+              # Retrieve all pieces from DynamoDB
+              dynamodb = boto3.resource('dynamodb')
+              table = dynamodb.Table(table_name)
+              response = table.scan()
+              return response['Items']
+
+
+          def validate_pieces(pieces):
+              # Validate if all pieces are present
+              count_set = set(piece['count'] for piece in pieces)
+              expected_counts = set(range(len(pieces)))
+              return count_set == expected_counts
+
+
+          def reassemble_image(pieces):
+              # Sort pieces based on count, excluding the piece with 'END'
+              sorted_pieces = sorted([piece for piece in pieces if piece['data'] != 'END'], key=lambda x: x['count'])
+              # Create a BytesIO object to accumulate binary data
+              image_data_io = BytesIO()
+              # Write binary data from each piece to the BytesIO object
+              for piece in sorted_pieces:
+                  image_data_io.write(piece['data'].value)
+              # Move the cursor to the beginning of the BytesIO object
+              image_data_io.seek(0)
+              # Create an image from the binary data
+              image = Image.open(image_data_io)
+              return image
+
+
+          def save_to_s3(image):
+              # Save the assembled image to S3
+              current_time = int(time.time())
+              key = f'{FOLDER_NAME}/{PICTURE_NAME}_{current_time}.jpeg'
+            
+              with BytesIO() as output:
+                  image.save(output, format='JPEG')
+                  output.seek(0)
+                  s3.put_object(Bucket=BUCKET_NAME, Key=key, Body=output)
+
+
+          def clean_up_dynamodb(table_name):
+              # Delete the DynamoDB table
+              dynamodb = boto3.resource('dynamodb')
+              table = dynamodb.Table(table_name)
+              table.delete()
+
+  HydroPicoBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref HydroPicoBucketName
+
+  HydroPicoBucketStaticPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref HydroPicoBucketName
+      PolicyDocument:
+        Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref HydroPicoBucketName
+                    - /static/* # Adjust the path as needed
+            Principal: "*"
+
+  HydroPicoBucketImagesPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref HydroPicoBucketName
+      PolicyDocument:
+        Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref HydroPicoBucketName
+                    - /images/* # Adjust the path as needed
+            Principal: "*"
