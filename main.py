@@ -3,9 +3,9 @@ import gc
 gc.collect()
 from microdot_asyncio import Microdot, Response
 from routes import setup_routes
-from display import Display
-from mqtt import MQTT
-from menu_items import Wizard, Menu, Selection
+from classes.display import Display
+from hydropico_machine.classes.mqtt import MQTT
+from classes.menu_items import Wizard, Menu, Selection
 from camera import Camera
 from machine import SPI, Pin
 from utime import sleep_ms

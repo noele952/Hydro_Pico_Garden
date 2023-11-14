@@ -1,9 +1,9 @@
 import network
-from config import ConfigManager
-from display import Display
-from mqtt import MQTT
-from garden import Garden
-from menu_items import Menu, Wizard, Selection
+from classes.config import ConfigManager
+from classes.display import Display
+from classes.mqtt import MQTT
+from classes.garden import Garden
+from classes.menu_items import Menu, Wizard, Selection
 
 
 I2C_CLOCK = 7
