@@ -1,6 +1,6 @@
 from microdot_asyncio import send_file, redirect
 from microdot_utemplate import render_template
-from garden_data import plant_data
+from data.garden_data import plant_data
 import urequests
 
 
