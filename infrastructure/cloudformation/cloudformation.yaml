@@ -200,7 +200,6 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Ref HydroPicoBucketName
-      AccessControl: PublicRead
 
   HydroPicoBucketStaticPolicy:
     Type: "AWS::S3::BucketPolicy"
