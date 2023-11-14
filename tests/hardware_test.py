@@ -1,4 +1,4 @@
-from config import ConfigManager
+from classes.config import ConfigManager
 from machine import Pin, I2C, ADC, SPI
 import ssd1306
 import bme280

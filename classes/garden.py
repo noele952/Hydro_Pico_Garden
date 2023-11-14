@@ -3,7 +3,7 @@ import bme280
 import math
 import time
 import json
-from garden_data import plant_data
+from data.garden_data import plant_data
 
 
 class Garden:
