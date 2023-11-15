@@ -30,7 +30,7 @@ The HydroPico Garden project is continuously evolving. Here are some planned enh
 
 1. [Introduction](#introduction)
 2. [Hardware Setup](#hardware-setup)
-3. [Software Dependencies](#software-dependencies)
+3. [Software Dependencies](#dependencies)
 4. [Installation](#installation)
 5. [Garden Construction](#garden-construction)
 6. [Web Application](#web-application)
@@ -106,17 +106,56 @@ I've included a bill of materials for the hardware, and a complete wiring schema
 
 This is the complete HydroPico wiring diagram, click the links below for wiring diagrams divided into sub systems, with detailed explanations.
 
-[HydroPico Wiring Diagram - Power](#wiring-power)
+[HydroPico Wiring Diagram - Power](#power-supply)
 
-[HydroPico Wiring Diagram - Screen and Encoder](#wiring-screen)
+[HydroPico Wiring Diagram - Screen and Encoder](#oled-screen-and-encoder)
 
-[HydroPico Wiring Diagram - Sensors and Camera](#wiring-sensors)
+[HydroPico Wiring Diagram - Sensors and Camera](#sensors-and-camera)
 
-## Software Dependencies
+### Hardware Test
 
-Before diving into the software setup for the HydroPico garden, there are a few prerequisites that need to be completed. First, we will need to establish a secure connection to AWS IoT Core so that we can send in MQTT data. Second we'll need to create some Lambda functions to process the mqtt messages. And third, we'll need to create a few IoT core message routing rules so that those messages are delivered to the proper functions.
+Before starting your garden, it's recommended to run a hardware test to ensure all components are assembled correctly and functioning properly.
 
-### Prerequisites
+First though, before we can test the hardware, you must install the [Software Dependencies](#dependencies) below.
+
+Once you have the hardware libraries installed, in the tests folder run the
+[hardware_test.py](./tests/hardware_test.py) file. Yuu can see a succsesful test in the video below
+
+#### Hardware Test -> Click For Video
+
+[![Alt text](https://img.youtube.com/vi/kN2_r-vspps/0.jpg)](https://www.youtube.com/watch?v=kN2_r-vspps)
+
+## Dependencies
+
+### Software Dependencies
+
+Install the following libraries on the pico w microcontroller
+
+- [Microdot GitHub](https://github.com/miguelgrinberg/microdot)
+
+- [Microdot_uTemplate GitHub](https://github.com/miguelgrinberg/microdot)
+
+- [SSD1306 Driver GitHub](https://github.com/noele952/micropython-ssd1306-custom-text/blob/main/ssd1306.py)
+
+- [Rotary Encoder Driver GitHub](https://github.com/MikeTeachman/micropython-rotary)
+
+- [BME280 Driver GitHub](https://github.com/bilalmalik76/MicroPython-BME280-Web-Server-with-ESP32-ESP8266-Weather-Station-/blob/main/BME280.py)
+
+- [umqtt.simple GitHub](https://github.com/fizista/micropython-umqtt.simple2)
+
+- [Arducam MicroPython Driver GitHub](https://github.com/CoreElectronics/CE-Arducam-MicroPython)
+
+### AWS Prerequisites
+
+We also have a few AWS dependencies that the HydroPico garden will require First, we will need to establish a secure connection to AWS IoT Core so that we can send in MQTT data. Second we'll need to create Lambda functions to process that mqtt data. And third we'll need to create a few IoT core message routing rules, so we can make sure that data gets tprocessed by the proper Lambda function, depending on what type it is(sensor data, image data, etc.)
+
+#### Automated Deployment (Optional)
+
+To streamline the AWS asset deployment, use our CloudFormation template:
+
+[Download CloudFormation Template](./infrastructure/cloudformation/cloudformation.yaml)
+
+The Security Certicate must be created manually, but otherwise you can skip most of the steps below. After you deploy the CloudFormation stack, go to step 4, and ignore the rest of the steps(Lambda, AWS IoT) unless they pertain to that certificate
 
 #### AWS IoT Core Security
 
@@ -179,22 +218,6 @@ Now that we have a secure AWS Iot Core connection and Lambda functions to proces
 5. **Step 5:** For Rule Action select Lambda, then select the store_mqtt_pic Lambda function created previously
 
 Now that we have the AWS side ready, we can setup the garden itself.
-
-### Dependencies
-
-- [Microdot GitHub](https://github.com/miguelgrinberg/microdot)
-
-- [Microdot_uTemplate GitHub](https://github.com/miguelgrinberg/microdot)
-
-- [SSD1306 Driver GitHub](https://github.com/tobeprovided)
-
-- [Rotary Encoder Driver GitHub](https://github.com/MikeTeachman/micropython-rotary)
-
-- [BME280 Driver GitHub](https://github.com/tobeprovided)
-
-- [umqtt.simple GitHub](https://github.com/fizista/micropython-umqtt.simple2)
-
-- [Arducam MicroPython Driver GitHub](https://github.com/CoreElectronics/CE-Arducam-MicroPython)
 
 ## Installation
 
@@ -262,10 +285,11 @@ Once the garden is connected to the network, and until a garden is started, it w
 
 ## Media
 
+## Power Supply
+
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_power_bb.png" alt="hydro pico wiring diagram - power supply" width="600" />
 </p>
-<h2>HydroPico Wiring Diagram - Power Supply</h2>
 
 For power we are 12V AC Adapter. That gets routed to the IN+ and IN- of the buck convertor, as well as the MOSFET trigger switch for the waterpump and the heater.
 
@@ -279,21 +303,21 @@ For the heater we'll need the ability to vary the heater power from high to low.
 
 The power outputs are connected to dupont pins soldered to the PCB board, with the corresponding dupont connectors attached to airpump, waterpump, and heater.
 
+## OLED Screen and Encoder
+
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_screen_bb.png" alt="hydro pico wiring diagram - screen and enocoder" width="400" />
 </p>
-
-<h2>HydroPico Wiring Diagram - OLED Screen & Encoder</h2>
 
 The OLED screen connects via I2C. I have the I2C bus connected to I2C Channel 1 on pins GP6 and GP7. 10K Ω pullup resistors connect the I2C data and clock lines to power for voltage stability.
 
 For the Rotary Encoder we connect Clock(CLK) to GP11, Data(DT) to GP10, and Switch(SW) to GP12
 
+## Sensors and Camera
+
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_sensors_bb.png" alt="hydro pico wiring diagram - sensors and camera" width="600" />
 </p>
-
-<h2>HydroPico Wiring Diagram - Sensors and Camera</h2>
 
 The BME280 board collects temperature, humidity and barometric pressure data. It connects via I2C, GP6 and GP7. We setup the bus in the OLED screen section above.
 
@@ -319,11 +343,6 @@ A project like the Hydroponic Garden wouldn't be possible without the valuable c
 - **Microdot_uTemplate:**
   - [Microdot_uTemplate GitHub](https://github.com/miguelgrinberg/microdot)
 
-### Display Driver
-
-- **SSD1306 Driver:**
-  - (Link to be provided later)
-
 ### Rotary Encoder Driver
 
 - **Rotary Encoder Driver:**
@@ -332,7 +351,7 @@ A project like the Hydroponic Garden wouldn't be possible without the valuable c
 ### Environmental Sensor Driver
 
 - **BME280 Driver:**
-  - (Link to be provided later)
+  - [BME280 Driver GitHub](https://github.com/bilalmalik76/MicroPython-BME280-Web-Server-with-ESP32-ESP8266-Weather-Station-/blob/main/BME280.py)
 
 ### MQTT Connection
 

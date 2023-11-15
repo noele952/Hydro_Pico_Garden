@@ -8,34 +8,48 @@ import os
 import time
 import math
 
+I2C_CLOCK = 7
+I2C_DATA = 6
+I2C_CHANNEL = 1
+APUMP_PIN = 22  
+WPUMP_PIN = 4
+PHOTORES_PIN = 27
+HEATER_PIN = 28
+LED_PIN = 15
+THERM_PIN = 26
+R_BTN_PIN = 12
+R_CL_PIN = 11
+R_DT_PIN = 10
+CAM_SCK = 18
+CAM_MISO = 16
+CAM_MOSI = 19
+CAM_CS = 17
+OLED_WIDTH = 128
+OLED_HEIGHT = 64
 
-app_config = ConfigManager(filename='testing')
+led = Pin(LED_PIN, Pin.OUT)
+i2c = I2C(I2C_CHANNEL, sda=Pin(I2C_DATA), scl=Pin(I2C_CLOCK))
 
-led = Pin(app_config.LED_PIN, Pin.OUT)
-i2c = I2C(app_config.I2C_CHANNEL, sda=Pin(app_config.I2C_DATA), scl=Pin(app_config.I2C_CLOCK))
-
-rotary_button = Pin(app_config.R_BTN_PIN, Pin.IN, Pin.PULL_UP)
-rotary_knob = RotaryIRQ(app_config.R_CL_PIN,
-                        app_config.R_DT_PIN,
-                        reverse=False, min_val=0,
+rotary_button = Pin(R_BTN_PIN, Pin.IN, Pin.PULL_UP)
+rotary_knob = RotaryIRQ(R_CL_PIN, R_DT_PIN,reverse=False, min_val=0,
                         max_val=9,
                         incr=1,
                         range_mode=RotaryIRQ.RANGE_WRAP,
                         pull_up=True,
                         half_step=False)
 
-cam = Camera(SPI(0,sck=Pin(app_config.CAM_SCK), miso=Pin(app_config.CAM_MISO), mosi=Pin(app_config.CAM_MOSI)), Pin(app_config.CAM_CS, Pin.OUT))
+cam = Camera(SPI(0,sck=Pin(CAM_SCK), miso=Pin(CAM_MISO), mosi=Pin(CAM_MOSI)), Pin(CAM_CS, Pin.OUT))
 
 # switches
-airpump = Pin(app_config.APUMP_PIN, Pin.OUT)
-waterpump = Pin(app_config.WPUMP_PIN, Pin.OUT)
-heater = Pin(app_config.HEATER_PIN, Pin.OUT) #PWM(Pin(heater_pin), freq=60, duty_u16=0) # duty_u16 sets the duty cycle as a ratio duty_u16 / 65535
+airpump = Pin(APUMP_PIN, Pin.OUT)
+waterpump = Pin(WPUMP_PIN, Pin.OUT)
+heater = Pin(HEATER_PIN, Pin.OUT) #PWM(Pin(heater_pin), freq=60, duty_u16=0) # duty_u16 sets the duty cycle as a ratio duty_u16 / 65535
 
 # sensors
-thermistor = ADC(app_config.THERM_PIN)
-photoresistor = ADC(app_config.PHOTORES_PIN)
+thermistor = ADC(THERM_PIN)
+photoresistor = ADC(PHOTORES_PIN)
 bme = bme280.BME280(i2c=i2c)       
-oled = ssd1306.SSD1306_I2C(app_config.OLED_WIDTH,app_config.OLED_HEIGHT, i2c)
+oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, i2c)
 
 
 
