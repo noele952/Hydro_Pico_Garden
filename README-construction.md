@@ -15,11 +15,11 @@
 
 ## Introduction
 
-This guide provides step-by-step instructions on assembling your hydroponic garden using simple materials. It is more meant as a general guideline, modify as needed. The design requires three principal things, a vessel to hold the garden(plants, fluids, etc.), a neck to put the camera in a position to take pictures of the garden, and a project box to contain the hardware.
+This guide provides step-by-step instructions on assembling the HydroPico garden using simple materials. It is meant as a general guideline, modify and adjust as neccesary. The design requires three principal things, a vessel to hold the garden(plants, fluids, etc.), a neck to put the camera in a position to take pictures of the garden, and a project box to contain the hardware.
 
 ## Materials
 
-We assume some of the materials form the [Hardware Section](README-webapp.md) of the guide(heating element, thermistor, etc.)
+We assume some of the materials from the [Hardware Section](README-webapp.md) of the guide(heating element, thermistor, etc.)
 
 - Epoxy, or similar adhesive
 
@@ -57,7 +57,7 @@ We assume some of the materials form the [Hardware Section](README-webapp.md) of
 
 ## Tools
 
-The only required tools to build the garden are a razor knife, and wire clippers. If you'd like to make the plastic work on the bucket(cutting, shaving) easy, I recommend a [butane soldering iron](https://www.amazon.com/s?k=butane+soldering+iron&crid=M1AR9DCSM4LH&sprefix=butane+soldering+iron%2Caps%2C170&ref=nb_sb_noss_1) with a shaping tool.
+The only required tools to build the garden are a razor knife, and wire clippers. If you'd like to make the plastic work on the bucket(cutting, shaving) easier, I recommend a [butane soldering iron](https://www.amazon.com/s?k=butane+soldering+iron&crid=M1AR9DCSM4LH&sprefix=butane+soldering+iron%2Caps%2C170&ref=nb_sb_noss_1) with a shaping tool.
 
 ## Assembly
 
@@ -67,7 +67,7 @@ Instructions for preparing the main container for the hydroponic system.
 
 #### Heater Installation
 
-Stcik the polyimide heating element ot the bottom of the bucket. Attach the heater wires to the side of the bucket, and make sure it's long enough to reach the project box. If your bucket is like mine, you'll need to shave some plactic from the bottom of the bucket so the heater is flush
+Stick the polyimide heating element ot the bottom of the bucket. Attach the heater wires to the side of the bucket, and make sure it's long enough to reach the project box. If your bucket is like mine, you'll need to shave some plactic from the bottom of the bucket so the heater is flush
 
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/garden_heater.jpg" alt="hydro pico garden heater" width="500" />

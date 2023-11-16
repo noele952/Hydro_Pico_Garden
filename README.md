@@ -1,13 +1,17 @@
+<p align="center">
+<img src="https://hydropi.s3.us-east-2.amazonaws.com/github/HydroPicoBanner.jpg" alt="hydro pico airpump" width="800" />
+</p>
+
 # HydroPico Hydroponic Garden
 
 ## Introduction
 
-Welcome to the documentation for the HydroPico Hydroponic Garden project. The Hydro Pico garden is designed to serve two purposes
+Welcome to the documentation for the HydroPico hydroponic Garden project. The HydroPico garden is designed to serve two purposes
 
 **Garden Control System:**
-The core focus lies in automating your gardening experience. Intelligently managing pumps, heating elements, in coordination with sensors, to optimize the growing environment. The garden settings are stored in a garden_data file, and can be customized to potentially grow whatever plant you like.
+The core focus lies in automating your gardening experience. Intelligently managing pumps and heating elements, in coordination with sensors, to optimize the growing environment. These settings are stored in a [garden_data](./data/garden_data.py) file, and are completely customizable.
 
-You can dive into customization by fine-tuning parameters in the garden_data file(pump schedules, water heat, etc.), tailoring the environment to the specific requirements of any plant you choose to cultivate.
+Fine tune the parameters in the file(pump schedules, water heat, etc.), tailoring the environment to the specific requirements of any plant you choose to cultivate.
 
 **IoT Data Collection Device:**
 The second focus of the HydroPico garden is as an Internet of Things (IoT) data collecting device. Connecting to AWS IoT Core, it logs the sensor data to a DynamoDB table and captures hourly snapshots of the garden. You can connect as many gardens as you want to a single AWS IoT core account, and all of the data for each individual garden will be separated and stored.
@@ -116,10 +120,10 @@ This is the complete HydroPico wiring diagram, click the links below for wiring 
 
 Before starting your garden, it's recommended to run a hardware test to ensure all components are assembled correctly and functioning properly.
 
-First though, before we can test the hardware, you must install the [Software Dependencies](#dependencies) below.
+First, install the [Software Dependencies](#dependencies) below.
 
-Once you have the hardware libraries installed, in the tests folder run the
-[hardware_test.py](./tests/hardware_test.py) file. Yuu can see a succsesful test in the video below
+Once you have the hardware libraries installed, run the
+[hardware_test.py](./tests/hardware_test.py) file, located in the /tests folder. You can see a succsesful test in the video below.
 
 #### Hardware Test -> Click For Video
 
@@ -129,7 +133,7 @@ Once you have the hardware libraries installed, in the tests folder run the
 
 ### Software Dependencies
 
-Install the following libraries on the pico w microcontroller
+Install the following Micropythonlibraries on the pico w microcontroller
 
 - [Microdot GitHub](https://github.com/miguelgrinberg/microdot)
 
@@ -147,25 +151,25 @@ Install the following libraries on the pico w microcontroller
 
 ### AWS Prerequisites
 
-We also have a few AWS dependencies that the HydroPico garden will require First, we will need to establish a secure connection to AWS IoT Core so that we can send in MQTT data. Second we'll need to create Lambda functions to process that mqtt data. And third we'll need to create a few IoT core message routing rules, so we can make sure that data gets tprocessed by the proper Lambda function, depending on what type it is(sensor data, image data, etc.)
+We also have a few Amazon Web Services dependencies that the HydroPico garden will require. First, we will need to establish a secure connection to AWS IoT Core so that we can send in MQTT data. Second we'll need to create Lambda functions to process that mqtt data. And third we'll need to create a few IoT core message routing rules, so we can make sure that data gets processed by the proper Lambda function, depending on the type of the data(sensor, image, etc.)
 
 #### Automated Deployment (Optional)
 
 To streamline the AWS asset deployment, use our CloudFormation template:
 
-[Download CloudFormation Template](./infrastructure/cloudformation/cloudformation.yaml)
+[CloudFormation Template](./infrastructure/cloudformation/cloudformation.yaml)
 
-The Security Certicate must be created manually, but otherwise you can skip most of the steps below. After you deploy the CloudFormation stack, go to step 4, and ignore the rest of the steps(Lambda, AWS IoT) unless they pertain to that certificate
+The Security Certicate must be created manually, but otherwise you can skip most of the steps below. After you deploy the CloudFormation stack, go to step 4 and create the certificate, ignore the rest of the steps(Lambda, AWS IoT) unless they pertain to that certificate
 
 #### AWS IoT Core Security
 
-Before you can connect to AWS IoT, you will need to create to generate a security certificate, and a key. Follow these steps to get setup with AWS IoT Core:
+Before you can connect to AWS IoT, you will need to to generate a security certificate, and a key. Follow these steps to get set this up with AWS IoT Core:
 
 \* The AWS interface is subject to change at any time. You may need to adapt these instructions
 
 1. **Step 1:** Connect to AWS and open IoT Core
 2. **Step 2:** From the AWS IoT menu select Security > Policies
-3. **Step 3:** From policies menu select create policy, add the following policy statements, and create
+3. **Step 3:** From the policies menu select create policy, add the following policy statements, and click create
 
 - Allow - iot:Connect - \*
 - Allow - iot:Publish - \*
@@ -178,56 +182,74 @@ Before you can connect to AWS IoT, you will need to create to generate a securit
    \*\*\*BE AWARE - this is the only time they will be available for download
 
 6. **Step 6:** Go to AWS IoT > Manage > Things and click Create Things
-7. **Step 7:** select Create single thing, select No shadow, and name your thing. Skip certificate creation
-8. **Step 8:** In Security > Certificates menu, select the certificate you created in step 5, click Attach policies, and attach the policy created in step 3
+7. **Step 7:** select Create single thing, select No shadow, and name the thing. Skip certificate creation
+8. **Step 8:** In Security > Certificates menu, select the certificate created in step 5, click Attach policies, and attach the policy created in step 3
 
-9. **Step 9:** in your certificate menu, selct Things, click Attach to things, and attach the thing you created in step 7
+9. **Step 9:** in the certificate menu, select Things, click Attach to things, and attach the thing you created in step 7
 
-10. **Step 10:** Go to the Settings Menu, and copy the Endpoint. In the config.py file set your MQTT_CLIENT_ID to the endpoint value
+10. **Step 10:** Go to the Settings Menu, and copy the Endpoint. In the config.py file set your MQTT_CLIENT_ID to the Endpoint value
 
-We're done on AWS, but there are a few more steps to complete on your machine. We need to convert your key and certificate to DER format, and store it on your pico.
+Now we need to convert the key and certificate to DER format, and store it on your pico.
 
-To do the conversion you will need to have openssl installed. In a terminal run the following commands on the key and certificate files that you downloaded previously.
+To complete the conversion you will need to have openssl installed. In a terminal run the following commands on the key and certificate files that you downloaded previously.
 
-- openssl rsa -in private.pem.key -out private.der - outform DER
-- openssl x509 -in certificate.pem.crt -out certificate.der -outform DER
-  Take the certificates and store them in /certs on the pico.
+```
+openssl rsa -in private.pem.key -out private.der - outform DER
+
+openssl x509 -in certificate.pem.crt -out certificate.der -outform DER
+```
+
+Take the certificates and store them in the /certs folder on the pico.
 
 The name and placement of your certificate and key files can be adjusted in config.py by changing the value of CERT_FILE and KEY_FILE
 
 #### AWS LAMBDA
 
-Now that we have an MQTT connection, we need some Lambda functions to process the messages. Consult the README.md files for installation details.
+Now that we have an MQTT connection, we need some Lambda functions to process the messages. Consult the README.md file attached to each function for further instructions.
 
 The first function processes the sensor data messages, and saves the data in a DynamoDB table.
 
 [collect_data_mqtt](https://github.com/noele952/Lambda_collect_mqtt_data)
 
-In order to send the garden picture jpeg file over MQTT, it is first broken down into a series of 64 bit encoded strings, which are then sent as a series of mqtt messages. The second link is a pair of Lambda functions. The first function takes the encoded strings and saves them together in a DynamoDB table. The second reassembles the pieces into a .jpeg file, and stores it in your garden picture S3 bucket.
+In order to send the garden picture jpeg file over MQTT, it is first broken down into a series of 64 bit encoded strings, which are then sent as a series of mqtt messages. The second link is a pair of Lambda functions. The first function takes the encoded strings and stores them together in a DynamoDB table. The second reassembles the pieces into a .jpeg file, and places it in your garden picture S3 bucket.
 
 [transmit_pic_mqtt](https://github.com/noele952/Lambda_transmit_pic_mqtt)
 
-#### AWS IoT Core Messsage Routing
+#### AWS IoT Core Message Routing
 
-Now that we have a secure AWS Iot Core connection and Lambda functions to process the messages, we need to set IoT messaging rules to send the messages to the proper Lambda function:
+With a secure AWS Iot Core connectionsetup, and Lambda functions to process the messages, we now need to setup AWS IoT Core messaging rules to send the messages to the proper Lambda functions:
 
-1. **Step 1:** open AWS IoT Core, from Message routing > Rules select Create Rule
-2. **Step 2:** name the rule whatever you like, and supply this SQL statement: SELECT \* FROM 'GardenData' WHERE label = 'data'
-3. **Step 3:** For Rule Action select Lambda, then select the collect_mqtt_data Lambda function created previously
-4. **Step 4:** create another rule, and supply this SQL statement: SELECT \* FROM 'GardenData' WHERE label = 'garden_pic'
-5. **Step 5:** For Rule Action select Lambda, then select the store_mqtt_pic Lambda function created previously
+1. **Step 1:** Open AWS IoT Core, from Message routing > Rules select Create Rule
+2. **Step 2:** Name the rule whatever you like, and supply this SQL statement:
 
-Now that we have the AWS side ready, we can setup the garden itself.
+```
+SELECT \* FROM 'GardenData' WHERE label = 'data'
+```
+
+3. **Step 3:** For Rule Action select Lambda, then select the [collect_data_mqtt](https://github.com/noele952/Lambda_collect_mqtt_data) Lambda function created previously
+4. **Step 4:** create another rule, and supply this SQL statement:
+
+```
+SELECT \* FROM 'GardenData' WHERE label = 'garden_pic'
+```
+
+5. **Step 5:** For Rule Action, select Lambda, then select the [store_mqtt_pic](https://github.com/noele952/Lambda_collect_mqtt_data) Lambda function created previously
+
+With the AWS configuration complete, we can finish setting up the garden.
 
 ## Installation
 
-If you've completed all of the AWS prerequisites and installed the dependencies, just clone the github repository and install it on the Pico W, and consult the Web Application section for instructions on starting the garden.
+If the AWS prerequisites are completed, and the software dependencies are installed, just clone the github repository and install on the Pico W.
 
-[Web App Section README](README-webapp.md)
+Plug in the power supply, and follow the instructions on the oled screen to get the HydroPico garden connected to your network.
+
+#### HydroPico Setup -> Click For Video
+
+[![Alt text](https://img.youtube.com/vi/PLSq3jq0oMs/0.jpg)](https://www.youtube.com/watch?v=PLSq3jq0oMs)
 
 ### Configuration
 
-There are a few configuration options available in the config.py file. If you are running only one garden, no configuration is necessary
+There are a few configuration options available in the config.py file. If you are running only one garden, no configuration is necessary.
 
 from config.py:
 
@@ -241,13 +263,15 @@ from config.py:
         self.MQTT_CHUNK_SIZE=1536
 ```
 
-AES_CIPHER is used to save and encrypt/decrypt your network password, feel free to customize, must be 16 digits
+AES_CIPHER is used to encrypt/decrypt your network password, for security. Feel free to customize, must be 16 digits
 
-MACHINE_ID is used to label the MQTT data. If you will be runnning multiple gardens give them a unique MACHINE_ID, and their data will be stored seperately.
+MACHINE_ID is used to label the MQTT data. If runnning multiple gardens, give them a unique MACHINE_ID and their data will be stored seperately.
 
 CERT_FILE and KEY_FILE can be altered if you'd like to change the name/location of your AWS IoT Core certificate and key file.
 
-MQTT_CHUNK_SIZE determines the length of the 64 bit encoded strings that the garden photo jpeg file is broken into before sending. Adjust at your own risk. The larger the chunk, the fewer messages that need to be sent, but the greater for potential memory issues on the Pico W.
+MQTT_CHUNK_SIZE determines the length of the 64 bit encoded strings that the garden photo jpeg file is broken into before sending. Adjust at your own risk. The larger the chunk, the fewer the messages that need to be sent, but the greater the potential for memory issues.
+
+Consult the [Web Application](README-webapp.md) section for instructions in that regard.
 
 ## Garden Construction
 
@@ -267,66 +291,58 @@ For detailed information about setting up and running the web app, please refer 
 
 ## Usage
 
-Once you have your garden started everything is automated. Just keep it filled with the nutrient solution of your choice. I recommend [General Hydroponics](https://www.amazon.com/General-Hydroponics-FloraSeries-Hydroponic-Fertilizer/dp/B0B2C22L3G/ref=sr_1_5?crid=OJRH8ZP8J8AK&keywords=general%2Bhydroponics&qid=1699503106&sprefix=general%2Bhydroponics%2Caps%2C162&sr=8-5&th=1)
+Once you have your garden started everything is automated. Just keep ithe bucket filled with the nutrient solution of your choice. I recommend [General Hydroponics](https://www.amazon.com/General-Hydroponics-FloraSeries-Hydroponic-Fertilizer/dp/B0B2C22L3G/ref=sr_1_5?crid=OJRH8ZP8J8AK&keywords=general%2Bhydroponics&qid=1699503106&sprefix=general%2Bhydroponics%2Caps%2C162&sr=8-5&th=1)
 
-Refer to the [Web Application Section](README-webapp.md) for details on how to get your garden started. The Web Application is designed as the main interface for interacting with your garden. However you can also interface with the machine through the oled screen and the rotary encoder.
-
-Once the garden is connected to the network, and until a garden is started, it will display the address for the web application. If you scroll with the encoder you can select a plant and start your gardn, or continue scrolling to show readings for the different sensors.
+Refer to the [Web Application Section](README-webapp.md) for details on using the web application. You can also interface with the machine through the oled screen and the rotary encoder.
 
 #### OLED Main Menu -> Click For Video
 
 [![Alt text](https://img.youtube.com/vi/PLSq3jq0oMs/0.jpg)](https://www.youtube.com/watch?v=PLSq3jq0oMs)
 
-<p>Once a garden has been started, the oled and the rotary encoder will allow you to scroll through the sensor data, and if you push in  the encoder on the Reset screen, it will initiate a reset</p>
-
-#### OLED Main Menu -> Click For Video
-
-[![Alt text](https://img.youtube.com/vi/FiWBI7PyXQg/0.jpg)](https://www.youtube.com/watch?v=FiWBI7PyXQg)
-
 ## Media
 
-## Power Supply
+### Power Supply
 
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_power_bb.png" alt="hydro pico wiring diagram - power supply" width="600" />
 </p>
 
-For power we are 12V AC Adapter. That gets routed to the IN+ and IN- of the buck convertor, as well as the MOSFET trigger switch for the waterpump and the heater.
+For power supply we use a 12V DC Adapter. That gets routed to the IN+ and IN- of the buck convertor, and the MOSFET trigger switches for the waterpump and the heater.
 
-From the buck convertor, connect OUT- to ground on the Pico, and OUT+ to the VSYS Pin. A 1N5817 diode is wired inline as a "diode ORing". This setup ensures there is no current backflow if the pico is connected to both the DC power and the built in USB simultaneously. For example, when you connect the pico to your PC.
+From the buck convertor, connect OUT- to ground on the Pico, and OUT+ to the VSYS Pin on the Pico(39). A 1N5817 diode is wired inline as a "diode ORing". This ensures there is no current backflow if the Pico is connected to both the DC power and the built in USB power simultaneously. For example, when connecting the pico to a PC.
 
-We also connect OUT+ and OUT- from the buck convertor to the MOSFET trigger switch for the airpump, which uses the same 3.3V power as the Pico microcontroller.
+Connect OUT+ and OUT- from the buck convertor to the MOSFET trigger switch for the airpump, which also uses 3.3V power.
 
-For the airpump and waterpump MOSFET trigger switches we have a simple on/off function, so any standard pin will do. In this case we use GP22 for the airpump, and GP4 for the waterpump.
+The airpump and waterpump MOSFET trigger switches have a simple on/off function. We use Pin GP22 for the airpump, and GP4 for the waterpump.
 
-For the heater we'll need the ability to vary the heater power from high to low. We'll need Pulse Width Modulation(PWM), which we setup in the code. Connect the heaters MOSFET trigger switch to GP28.
+For the heater we'll need Pulse Width Modulation(PWM), giving us the ability to vary the heater power from high to low. Connect the heaters MOSFET trigger switch to GP28.
 
-The power outputs are connected to dupont pins soldered to the PCB board, with the corresponding dupont connectors attached to airpump, waterpump, and heater.
+The power outputs are connected to dupont pins soldered to the PCB board, with the corresponding dupont connectors attached to wiring for the airpump, waterpump, and heater.
 
-## OLED Screen and Encoder
+### OLED Screen and Encoder
 
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_screen_bb.png" alt="hydro pico wiring diagram - screen and enocoder" width="400" />
 </p>
 
-The OLED screen connects via I2C. I have the I2C bus connected to I2C Channel 1 on pins GP6 and GP7. 10K Ω pullup resistors connect the I2C data and clock lines to power for voltage stability.
+The OLED screen connects via I2C. The I2C bus connects to I2C Channel 1 on pins GP6 and GP7. 10K Ω pullup resistors connect the I2C data and clock lines to power, for voltage stability.
 
 For the Rotary Encoder we connect Clock(CLK) to GP11, Data(DT) to GP10, and Switch(SW) to GP12
 
-## Sensors and Camera
+### Sensors and Camera
 
 <p align="center">
 <img src="https://hydropi.s3.us-east-2.amazonaws.com/github/hydro_pico_sensors_bb.png" alt="hydro pico wiring diagram - sensors and camera" width="600" />
 </p>
 
-The BME280 board collects temperature, humidity and barometric pressure data. It connects via I2C, GP6 and GP7. We setup the bus in the OLED screen section above.
+The BME280 breakout board collects temperature, humidity and barometric pressure data. It connects via I2C,on GP6 and GP7. We setup the I2C bus in the OLED screen section above.
 
 The Photoresistor (LDR) provides light level data. It provides an analog signal and requires an ADC (Analog-to-Digital Convertor) pin. In this case GP27. A 10k Ω pull-down resistor pulls the signal low when the line is idle.
 
-A Thermistor is submerged in the nutrient solution to provide water tdata. See the [Garden Construction README](README-construction.md) for details.
+A Thermistor is submerged in the nutrient solution to provide water data. See the [Garden Construction README](README-construction.md) for details.
 It provides an analog signal and requires an ADC (Analog-to-Digital Convertor) pin. In this case GP26. A 10k Ω pull-up resistor pulls the signal high when the line is idle.
 
-For the ArduCam MEGA SPI 5MP camera we connect Serial Clock(SCK) to GP18, MISO to GP16, MOSI to GP19, and Chip Select(CS) on GP17.
+For the ArduCam MEGA SPI 5MP camera connect Serial Clock(SCK) to GP18, MISO to GP16, MOSI to GP19, and Chip Select(CS) on GP17.
 
 ## Contributions
 
