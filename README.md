@@ -245,7 +245,7 @@ Plug in the power supply, and follow the instructions on the oled screen to get 
 
 #### HydroPico Setup -> Click For Video
 
-[![Alt text](https://img.youtube.com/vi/PLSq3jq0oMs/0.jpg)](https://www.youtube.com/watch?v=PLSq3jq0oMs)
+[![Alt text](https://img.youtube.com/vi/FqmGYAr5RJ0/0.jpg)](https://www.youtube.com/watch?v=FqmGYAr5RJ0)
 
 ### Configuration
 
