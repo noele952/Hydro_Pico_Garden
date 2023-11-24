@@ -51,8 +51,8 @@ reset_select = Selection(display, 'RESET GARDEN', [
 reset_wiz = Wizard(display, [reset_select], lambda: print(display.menu_data.pop(
     'reset', False) if 'reset' in display.menu_data else print("Key not found")))
 
-main_menu = Menu(display, [('', ''), ('GARDEN INFO', display.garden_info), ('TEMPERATURE', display.temperature), ('PRESSURE', display.pressure), ('HUMIDITY', display.humidity),
-            ('PICO TEMP', display.internal_temp), ('WATER TEMP', display.thermistor_temp), ('RESET', ['Press Button', 'To Reset', 'Garden'], reset_wiz), ('', '')])
+main_menu = Menu(display, [('', ''), ('GARDEN INFO', display.garden_info), ('TEMPERATURE', display.temperature), ('BAROMETER', display.pressure), ('HUMIDITY', display.humidity),
+            ('CPUO TEMP', display.internal_temp), ('WATER TEMP', display.thermistor_temp), ('RESET', ['Press Button', 'To Reset', 'Garden'], reset_wiz), ('', '')])
 
 display.set_current(main_menu)
 

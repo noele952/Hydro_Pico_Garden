@@ -1,22 +1,12 @@
 from machine import Pin, I2C
 import ssd1306
 from rotary_irq_pico import RotaryIRQ
-import time
-from config import ConfigManager
-
-I2C_CL_PIN = 7
-I2C_DA_PIN = 6
-I2C_CH_PIN = 1
-OLED_WIDTH = 128
-OLED_HEIGHT = 64
-R_BTN_PIN = 12
-R_CL_PIN = 11
-R_DT_PIN = 10
 
 
 class Display:
-    def __init__(self, garden, I2C_channel=I2C_CH_PIN, I2C_clock=I2C_CL_PIN, I2C_data=I2C_DA_PIN, oled_height=OLED_HEIGHT, oled_width=OLED_WIDTH, rotary_btn_pin=R_BTN_PIN,
-                 rotary_clock_pin=R_CL_PIN, rotary_data_pin=R_DT_PIN):
+    def __init__(self, garden, I2C_channel, I2C_clock, I2C_data, oled_height, oled_width, rotary_btn_pin,
+                 rotary_clock_pin, rotary_data_pin):
+        # Initialize Display object with supplied parameters
         self.i2c = I2C(I2C_channel, sda=Pin(I2C_data), scl=Pin(I2C_clock))
         self.oled_width = oled_width
         self.oled_height = oled_height
@@ -39,6 +29,7 @@ class Display:
     
 
     def center(self, text, size):
+        # Calculate offset for centering text based on size
         if text is None:
             return 0
         length = len(text)
@@ -55,6 +46,7 @@ class Display:
 
 
     def display(self, content=None):
+        # Display content on the OLED screen
         self.oled.fill(0)
         if content is not None:
             title = content[0]
@@ -76,43 +68,51 @@ class Display:
         self.oled.show()
     
     def set_current(self, obj):
-        "always do this when we change the control object"
+        # Set the current control object and execute its on_current method
+        # always do this when we change the control object
         self.stack.append(obj)
         self.current = obj
         self.current.on_current()
     
     
     def back(self):
+        # Navigate back in the menu stack
         if len(self.stack) > 1:
             self.stack.pop()    
         self.set_current(self.stack.pop())
     
     def temperature(self):
+        # Get temperature information from the garden object
         temperature_cf = self.garden.temperature()
         return temperature_cf[1][:-3] + ' F'
         
     def pressure(self):
+        # Get pressure information from the garden object
         return self.garden.pressure().split('.')[0] + ' hPa'
                                  
     def humidity(self):
+        # Get humidity information from the garden object
         return self.garden.humidity()
     
     def internal_temp(self):
+        # Get internal temperature information from the garden object
         temperature_cf = self.garden.internal_temp()
         return temperature_cf[1]
     
     def thermistor_temp(self):
-         temperature_cf = self.garden.thermistor_temp()
-         return temperature_cf[1][:-3] + ' F'
+        # Get thermistor temperature information from the garden object
+        temperature_cf = self.garden.thermistor_temp()
+        return temperature_cf[1][:-3] + ' F'
     
     def garden_info(self):
+        # Get information about the garden (plant type and days planted)
         plant_type = self.garden.plant_type
         days_planted = str(self.garden.days_planted())
         if plant_type is None:
             return ['', 'Days Planted:', days_planted]
-        
         return [f'{plant_type[0].upper() + plant_type[1:]}', 'Days Planted:', days_planted]
 
     def webapp_address(self):
+        # Return the web app address for display
         return "192.168.5.97:5000"
    

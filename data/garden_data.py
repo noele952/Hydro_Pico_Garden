@@ -1,4 +1,12 @@
 
+# Plant data dictionary that holds timing and temperature settings for a hydroponic garden
+
+# Explanation of Parameters:
+# - water_temp: Ideal water temperature for the plant (in degrees Fahrenheit)
+# - waterpump_duration: Duration to run the water pump for the plant (in seconds)
+# - waterpump_interval: Interval between water pump cycles for the plant (in seconds)
+# - airpump_duration: Duration to run the air pump for the plant (in seconds)
+# - airpump_interval: Interval between air pump cycles for the plant (in seconds)
 plant_data = {
     "lettuce": {
         'waterpump_duration': 60,

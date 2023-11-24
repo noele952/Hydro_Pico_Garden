@@ -4,7 +4,10 @@ import os
 
 class ConfigManager:
     def __init__(self, filename, aes_cipher):
+        # Initialize ConfigManager with specified filename
         self.filename = filename
+
+        # Define hardware configuration constants
         self.aes_cipher = aes_cipher
         self. I2C_CLOCK = 7
         self.I2C_DATA = 6
@@ -27,6 +30,7 @@ class ConfigManager:
         self.OLED_WIDTH = 128
         self.OLED_HEIGHT = 64
 
+        # Define file paths and cryptographic constants
         self.AES_CIPHER = aes_cipher
         self.GARDEN_CONFIG_FILE = 'garden.json'
         self.MACHINE_ID = 'machine_id'
@@ -35,25 +39,32 @@ class ConfigManager:
         self.PASSWORD_FILE = filename
         self.IMAGE_FILE = '/static/images/image.jpg'
         self.CLOUD_IMAGE_PREFIX = 'garden_pic'
+
         # AWS endpoint parameters.
-        # Should be different for each device can be anything
         self.MQTT_CLIENT_ID="hydro_pico"
         # You can get tihs address from AWS IoT->Settings -> Endpoint
-        # something like : {host id}.iot.{region}.amazonaws.com
         self.MQTT_ENDPOINT='mqtt_endpoint'
         self.MQTT_CHUNK_SIZE=1536
+
+        # Endpoint for Lambda function to retrieve most recent gardenpic
+        self.LAMBDA_ENDPOINT_GARDENPIC='lambda_endpoint'
+
+        # Load existing data or initialize an empty dictionary
         self.data = self.load_encrypted_data()  # Load existing data or initialize an empty dictionary
 
     def load_encrypted_data(self):
         try:
             with open(self.filename, 'rb') as file:
+                # Read encrypted data from the file and decrypt
                 encrypted_data = file.read()   
                 return self.decrypt(encrypted_data)
         except OSError:
+            # If file not found, create the file and return an empty dictionary
             print(f"File not found: {self.filename}")
-            self.create_file()  # Create the file if it doesn't exist
+            self.create_file()
             return {}
         except Exception as e:
+            # Error loading data, return an empty dictionary
             print(f"Error loading data: {e}")
             return {}
 
@@ -66,6 +77,7 @@ class ConfigManager:
             print(f"Error creating file: {e}")
 
     def save_to_config(self, value, *args):
+        # Save a value to the configuration file
         current_level = self.data
         for arg in args[:-1]:
             current_level = current_level.setdefault(arg, {})
@@ -73,6 +85,7 @@ class ConfigManager:
         self.update_config_file()
 
     def get_from_config(self, *args):
+        # Retrieve a value from the configuration file
         current_level = self.data
         for arg in args[:-1]:
             current_level = current_level.get(arg, {})
@@ -81,6 +94,7 @@ class ConfigManager:
         return current_level.get(args[-1])
 
     def remove_from_config(self, *args):
+        # Remove a value from the configuration file
         current_level = self.data
         for arg in args[:-1]:
             current_level = current_level.get(arg, {})
@@ -92,13 +106,14 @@ class ConfigManager:
     def update_config_file(self):
         try:
             with open(self.filename, "wb") as file:
-                # Save encrypted data
+                # Save encrypted data to file
                 file.write(self.encrypt(self.data))
         except Exception as e:
             print(f"Error saving data: {e}")
 
     def encrypt(self, data):
-        enc = ucryptolib.aes(self.aes_cipher, 1)
+        # Encrypt data using AES cipher
+        enc = ucryptolib.aes(self.AES_CIPHER, 1)
         data_bytes = json.dumps(data).encode()
         padding_len = 16 - (len(data_bytes) % 16)
         padded_data = data_bytes + bytes([padding_len] * padding_len)
@@ -106,10 +121,10 @@ class ConfigManager:
         return encrypted_data
 
     def decrypt(self, encrypted_data):
-        dec = ucryptolib.aes(self.aes_cipher, 1)
+        # Decrypt data using AES cipher
+        dec = ucryptolib.aes(self.AES_CIPHER, 1)
         decrypted_data = dec.decrypt(encrypted_data)
         padding_len = decrypted_data[-1]
         decrypted_data = decrypted_data[:-padding_len]
         decrypted_string = decrypted_data.decode()
         return json.loads(decrypted_string)
-

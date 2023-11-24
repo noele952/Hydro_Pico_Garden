@@ -1,5 +1,8 @@
+
+
 class PasswordEntry:
     def __init__(self, display, title, caption, selection, field='datafield'):
+        # Initialize PasswordEntry object
         self.display = display
         self.title = title
         self.caption = caption
@@ -9,6 +12,7 @@ class PasswordEntry:
         self.selection = selection + ['delete', 'submit', 'cancel']
         
     def on_scroll(self, val):
+        # Handle scrolling action for password entry
         new_index = self.index + val
         if new_index < 0:
             self.index = len(selection) - 4 #jump to last itme of selection, before ['delete', 'submit', 'cancel']
@@ -20,6 +24,7 @@ class PasswordEntry:
             
     
     def display_password(self):
+        # Display password entry on the OLED screen
         self.display.oled.fill(0)
         self.display.oled.write_text(title, self.display.center(title, 1), 0, 1)
         self.display.oled.write_text('Scroll To Select', self.display.center('Scroll To Select', 1), 16, 1)
@@ -27,6 +32,7 @@ class PasswordEntry:
         
 class Wizard:
     def __init__(self, display, menu, end_func):
+        # Initialize Wizard object
         self.index = 0
         self.display = display
         self.menu = menu
@@ -34,6 +40,7 @@ class Wizard:
         self.length = len(menu)
 
     def on_current(self):
+        # Handle current state in the wizard
         if self.menu == []:
             self.end_func()
             for i in range(self.length):
@@ -45,8 +52,8 @@ class Wizard:
 
 
 class Menu:
-    "Show menu on a display by turning a rotary encoder"
     def __init__(self, display, menu):
+        # Initialize Menu object
         self.display = display
         self.menu = menu
         self.length = len(menu)
@@ -56,6 +63,7 @@ class Menu:
         self.loaded = False
 
     def on_scroll(self, value):
+        # Handle scrolling action for the menu
         new_menu_position = self.menu_position + value
         self.previous_menu_position = self.menu_position
         if new_menu_position > self.length - 1:
@@ -72,8 +80,7 @@ class Menu:
                 [self.menu[self.menu_position][0], self.menu[self.menu_position][1]])
 
     def on_click(self):
-        "Execute the menu item's function"
-        print('on click')
+        # Execute the menu item's function on click
         try:
             action = self.menu[self.menu_position][2]
         except IndexError:
@@ -94,6 +101,7 @@ class Menu:
 
 
     def on_current(self):
+        # Handle the current state of the menu
         current_menu_item = self.menu[self.menu_position]
         if (current_menu_item != getattr(self, 'previous_menu_position', None) and self.previous_menu_position != self.menu_position) or self.loaded == False:
             self.loaded = True
@@ -109,6 +117,7 @@ class Menu:
 
 class Selection:
     def __init__(self, display, title, text, selection, field):
+        # Initialize Selection object
         self.display = display
         self.title = title
         self.text = text
@@ -118,11 +127,13 @@ class Selection:
         self.loaded = False
 
     def on_current(self):
+        # Handle the current state of the selection
         if self.loaded == False:
             self.loaded = True
             self.display_selection()
 
     def on_scroll(self, val):
+        # Handle scrolling action for the selection
         new_index = self.index + val
         if new_index < 0:
             self.index = 0
@@ -133,10 +144,12 @@ class Selection:
         self.display_selection()
 
     def on_click(self):
+        # Handle click action for the selection
         self.display.menu_data[self.field] = self.selection[self.index]
         self.display.back()
 
     def display_selection(self):
+        # Display the selection on the OLED screen
         self.display.oled.fill(0)
         self.display.oled.write_text(self.title, self.display.center(self.title, 1), 0, 1)
         self.display.oled.write_text('Scroll to Select', self.display.center('Scroll to Select', 1), 16, 1)
@@ -147,20 +160,24 @@ class Selection:
 
 class Entry:
     def __init__(self, display, title, field):
+        # Initialize Entry object
         self.display = display
         self.title = title
         self.field = field
+        # Define the available selection options
         self.selection = list('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ') + ['delete', 'cancel', 'submit']
-        self.entry = []
-        self.index = 0
+        self.entry = [] # User input will be stored here
+        self.index = 0 # Current index in the selection
         self.loaded = False
 
     def on_current(self):
+        # Perform actions when the Entry object is set as the current object
         if self.loaded == False:
             self.loaded = True
             self.display_entry()
 
     def on_scroll(self, val):
+        # Handle scrolling action
         new_index = self.index + val
         if new_index < 0:
             self.index = len(self.selection) - 1
@@ -171,20 +188,26 @@ class Entry:
         self.display_entry()    
 
     def on_click(self):
+        # Handle click action
         select = self.selection[self.index]
         if select == 'delete':
+            # Remove the last character from the entry
             self.entry = self.entry[-1]
         elif select == 'cancel':
+            # Clear the entry and go back
             self.entry = []
             self.display.back()
         elif select == 'submit':
+            # Save the entry to menu_data and go back
             self.display.menu_data[self.field] = str(self.entry)
             self.display.back()       
         else:
+            # Add the selected character to the entry
             self.entry[len(self.entry):] = select
         self.display_entry()
 
     def display_entry(self):
+        # Display the user input entry on the OLED screen
         self.display.oled.fill(0)
         self.display.oled.write_text(self.title, self.display.center(self.title, 1), 0, 1)
         self.display.oled.write_text('Scroll to Select', self.display.center('Scroll to Select', 1), 16, 1)
@@ -193,9 +216,4 @@ class Entry:
         self.display.oled.write_text(str(self.selection), self.display.center(str(self.selection), 1), 0, 1)
         self.display.oled.show()
 
-# SSID_entry = Entry(display, "ENTER SSID", 'SSID')
-# 
-# password_entry = Entry(display, "ENTER PASSWORD", 'password')
-# 
-# login_wiz = Wizard(display, [SSID_entry, password_entry], lambda: print("Entry complete"))
-      
+         
