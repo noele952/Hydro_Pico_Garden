@@ -159,7 +159,44 @@ To streamline the AWS asset deployment, use our CloudFormation template:
 
 [CloudFormation Template](./infrastructure/cloudformation/cloudformation.yaml)
 
-The Security Certicate must be created manually, but otherwise you can skip most of the steps below. After you deploy the CloudFormation stack, go to step 4 and create the certificate, ignore the rest of the steps(Lambda, AWS IoT) unless they pertain to that certificate
+The Security Certicate must be created manually, but otherwise you can skip most of the steps below. After you deploy the CloudFormation stack, skip to step 4 of the **AWS IoT Core Security** section and create the certificate, ignore the rest of the steps(Lambda, AWS IoT) unless they pertain to that certificate
+
+#### AWS S3
+
+Create an AWS S3 bucket to store assets for the HydroPico garden. Within the bucket, establish **static** and **images** folders to organize static files for the web app (such as CSS and JS) and images uploaded by the garden.
+
+Ensure the bucket is publicly accessible and implement a policy that allows public access only to the specified subfolders:
+
+```
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1405592139000",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": [
+                "arn:aws:s3:::your_bucket/static/*",
+                "arn:aws:s3:::your_bucket/images/*"
+            ]
+        },
+        {
+            "Sid": "Stmt1405592139001",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "NotResource": [
+                "arn:aws:s3:::your_bucket/static/*",
+                "arn:aws:s3:::your_bucket/images/*"
+            ]
+        }
+    ]
+}
+```
+
+Remember to replace "your_bucket" with the actual name of your S3 bucket
 
 #### AWS IoT Core Security
 
