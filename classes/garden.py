@@ -20,6 +20,8 @@ class Garden:
         - heater_pin: GPIO pin for the heater
         - thermistor_pin: GPIO pin for the thermistor
         - photoresistor_pin: GPIO pin for the photoresistor
+        - depth_charging_pin: GPIO pin that charges the capacative depth sensor
+        - depth_measuring_pin: GPIO pin that measures discharge time of capacitive depth sensor
         - led_pin: GPIO pin for the LED
         - I2C_channel: I2C communication channel
         - I2C_clock: GPIO pin for I2C clock.
@@ -34,6 +36,8 @@ class Garden:
         - airpump: Pin object for controlling the air pump
         - waterpump: Pin object for controlling the water pump
         - led: Pin object for controlling the LED
+        - depth_charge: Pin object for charging the capacitive sensor
+        - depth_measure: ADC object for measuring capacative sensor charge time
         - i2c: I2C protovol object
         - bme: BME280 object for reading temperature, pressure, and humidity
         - plant_type: Type of plant in the garden
