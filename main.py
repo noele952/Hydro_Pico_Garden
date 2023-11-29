@@ -116,6 +116,7 @@ async def mqtt_report(mqtt):
             mqtt.post('pico_tempF', mqtt.garden.temp_internal)
             mqtt.post('therm_tempF', mqtt.garden.temp_therm)
             mqtt.post('photo_resistor', mqtt.garden.photoresistor_percent())
+            mqtt.post('fluid volume', mqtt.garden.calculate_depth())
         except Exception as error:
             print("An mqtt post error occured:", error)
         await asyncio.sleep(3600) # Sleep for an hour
@@ -156,12 +157,20 @@ async def run_airpump(garden):
             
             
 async def heartbeat(garden):
-    # Toggle the attached LED as a heartbeat indicator
+    # Flash the LED when the fluid level is low
     while True:
-        garden.led.on()
-        await asyncio.sleep(1)
-        garden.led.off()
-        await asyncio.sleep(1)
+        active = False
+        if garden.calculate_depth() < 150: # activate if estimated fluid level below 150oz
+            active = True
+            while active:
+                for _ in range(30):     
+                    garden.led.on()
+                    await asyncio.sleep(1)
+                    garden.led.off()
+                    await asyncio.sleep(1)
+                if garden.calculate_depth() > 150: # deactivate if estimated fluid level over 150 oz
+                    active = False
+        await asyncio.sleep(3600)
             
             
 def encoded_file_generator(filename, chunk_size, finish_marker='END'):
