@@ -16,9 +16,9 @@ import ujson
 
 garden = Garden(plant_type=None, config_file=app_config.GARDEN_CONFIG_FILE, machine_id=app_config.MACHINE_ID,
                 waterpump_pin=app_config.WPUMP_PIN, airpump_pin=app_config.APUMP_PIN, thermistor_pin=app_config.THERM_PIN,
-                heater_pin=app_config.HEATER_PIN, photoresistor_pin=app_config.PHOTORES_PIN ,led_pin=app_config.LED_PIN,
-                I2C_channel=app_config.I2C_CHANNEL, I2C_clock=app_config.I2C_CLOCK,
-                I2C_data=app_config.I2C_DATA)
+                heater_pin=app_config.HEATER_PIN, photoresistor_pin=app_config.PHOTORES_PIN , depth_measuring_pin=app_config.DEPTH_ADC,
+                depth_charging_pin=app_config.DEPTH_PIN, led_pin=app_config.LED_PIN, I2C_channel=app_config.I2C_CHANNEL, 
+                I2C_clock=app_config.I2C_CLOCK, I2C_data=app_config.I2C_DATA)
 
 gc.collect()
 print("Free Memory7:", gc.mem_free())

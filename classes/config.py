@@ -15,12 +15,14 @@ class ConfigManager:
         self.APUMP_PIN = 22  
         self.WPUMP_PIN = 4
         self.PHOTORES_PIN = 27
-        self.HEATER_PIN = 28
+        self.HEATER_PIN = 2
         self.LED_PIN = 15
         self.THERM_PIN = 26
         self.R_BTN_PIN = 12
         self.R_CL_PIN = 11
         self.R_DT_PIN = 10
+        self.DEPTH_PIN = 3
+        self.DEPTH_ADC = 28
 
         self.CAM_SCK = 18
         self.CAM_MISO = 16

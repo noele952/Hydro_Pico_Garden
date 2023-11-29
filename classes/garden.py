@@ -7,7 +7,7 @@ from data.garden_data import plant_data
 
 
 class Garden:
-    def __init__(self, plant_type, config_file, machine_id, waterpump_pin, airpump_pin, heater_pin, thermistor_pin, photoresistor_pin, led_pin, I2C_channel, I2C_clock, I2C_data):
+    def __init__(self, plant_type, config_file, machine_id, waterpump_pin, airpump_pin, heater_pin, thermistor_pin, photoresistor_pin, depth_charging_pin, depth_measuring_pin, led_pin, I2C_channel, I2C_clock, I2C_data):
         """
         Initialize the Garden class.
 
@@ -52,6 +52,8 @@ class Garden:
         self.airpump = Pin(airpump_pin, Pin.OUT)
         self.waterpump = Pin(waterpump_pin, Pin.OUT)
         self.led = Pin(led_pin, Pin.OUT)
+        self.depth_charge = Pin(depth_charging_pin, Pin.OUT, value=0)
+        self.depth_measure = ADC(Pin(depth_measuring_pin))
         self.i2c = I2C(I2C_channel, sda=Pin(I2C_data), scl=Pin(I2C_clock))
         self.bme = bme280.BME280(i2c=self.i2c)
         self.plant_type = plant_type
@@ -217,7 +219,76 @@ class Garden:
         photo_value = self.photoresistor.read_u16()
         light_percentage = str(round(photo_value/65535*100, 2))
         return light_percentage
+
+
+    def _depth_sensor_cycle_time(self, cycles=100):
+        """
+        Measure the mean cycle time of charging and discharging a capacitor.
+
+        Parameters:
+        - cycles: Number of cycles to perform.
+
+        Returns:
+        - The mean cycle time.
+        """
+        charge_discharge_times = []
+        while len(charge_discharge_times) < cycles:
+            self.depth_charging_pin.value(1)
+            charge_start_time = utime.ticks_us()
+            if self.depth_measuring_pin.read_u16() >= 65535 * .9:
+                charge_time = utime.ticks_diff(utime.ticks_us(), charge_start_time)
+
+                self.depth_charging_pin.value(0)
+                discharge_start_time = utime.ticks_us()
+
+                while self.depth_measuring_pin.read_u16() >= 65535 * .1:
+                    pass
+
+                discharge_time = utime.ticks_diff(utime.ticks_us(), discharge_start_time)
+
+                charge_discharge_times.append(charge_time + discharge_time)
+                
+        if charge_discharge_times:  # Make sure list is not empty to avoid division by zero
+            charge_discharge_mean = sum(charge_discharge_times) / len(charge_discharge_times)
+            return charge_discharge_mean
+        else:
+            return 0
+
+
+    def calculate_depth(self):
+        """
+        Calculate the depth based on the cycle time, and the depth equation
+        a quadratic equation that we determined based on our calibration data
+        ax**2 + bx + c = y
+        y = cycle_time
+        """
+        a = -.011471388
+        b = 9.90607429
+        c = 506.578930
         
+        cycle_time = self._depth_sensor_cycle_time()
+
+        # Calculate the discriminant inside the square rot
+        discriminant = b**2 - 4 * a * (c - cycle_time)
+        
+        if discriminant >= 0:
+            # Calculate the square root
+            square_root_value = math.sqrt(discriminant)
+
+            # Use the quadratic formula to find the roots
+            root1 = (-b + square_root_value) / (2*a)
+            root2 = (-b - square_root_value) / (2*a)
+            if root2 > 0 and root2 <= 500:
+                return root2
+            elif root1 > 0 and root1 <= 500:
+                return root1
+            else:
+                return 0
+        return 0 
+
+
+
+
     
     def reset(self):
         # Reset the garden by removing current configuration, turning off pumps, and restarting machine
