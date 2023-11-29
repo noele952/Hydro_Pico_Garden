@@ -237,15 +237,15 @@ class Garden:
         """
         charge_discharge_times = []
         while len(charge_discharge_times) < cycles:
-            self.depth_charging_pin.value(1)
+            self.depth_charge.value(1)
             charge_start_time = utime.ticks_us()
-            if self.depth_measuring_pin.read_u16() >= 65535 * .9:
+            if self.depth_measure.read_u16() >= 65535 * .9:
                 charge_time = utime.ticks_diff(utime.ticks_us(), charge_start_time)
 
-                self.depth_charging_pin.value(0)
+                self.depth_charge.value(0)
                 discharge_start_time = utime.ticks_us()
 
-                while self.depth_measuring_pin.read_u16() >= 65535 * .1:
+                while self.depth_measure.read_u16() >= 65535 * .1:
                     pass
 
                 discharge_time = utime.ticks_diff(utime.ticks_us(), discharge_start_time)
